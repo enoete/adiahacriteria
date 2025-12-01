@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adiaha's Calypso Score Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff6b9d 0%, #c06c84 50%, #fec8d8 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header h2 {
+            font-size: 1.3em;
+            font-weight: normal;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .category {
+            margin-bottom: 35px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .category:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .category-header {
+            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .category-header h3 {
+            font-size: 1.3em;
+        }
+
+        .category-total {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .subcategory {
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+            background: white;
+        }
+
+        .subcategory:last-child {
+            border-bottom: none;
+        }
+
+        .subcategory-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .subcategory-header h4 {
+            color: #495057;
+            font-size: 1.1em;
+        }
+
+        .subcategory-header .max-points {
+            background: #e7f3ff;
+            color: #0066cc;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .criteria-list {
+            margin-bottom: 15px;
+        }
+
+        .criteria-item {
+            padding: 8px 0 8px 20px;
+            color: #6c757d;
+            font-size: 0.95em;
+            position: relative;
+        }
+
+        .criteria-item:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .score-input {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .score-input label {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .score-input input {
+            width: 100px;
+            padding: 10px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 1.1em;
+            text-align: center;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .score-input input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .score-input input.error {
+            border-color: #dc3545;
+            background: #fff5f5;
+        }
+
+        .total-section {
+            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            color: white;
+            padding: 25px 30px;
+            margin-top: 30px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .total-section h3 {
+            font-size: 1.5em;
+        }
+
+        .total-score {
+            font-size: 3em;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+            font-size: 0.9em;
+            border-top: 2px solid #e9ecef;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+            }
+            
+            .action-buttons {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+            
+            .header h2 {
+                font-size: 1em;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .total-section {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+
+        .validation-message {
+            color: #dc3545;
+            font-size: 0.85em;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .validation-message.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎤 Adiaha's Score Tracker 🎤</h1>
+            <h2>Junior Calypso Monarch Practice</h2>
+        </div>
+
+        <div class="content">
+            <!-- LYRICS SECTION -->
+            <div class="category">
+                <div class="category-header">
+                    <h3>📝 LYRICS</h3>
+                    <div class="category-total">
+                        <span id="lyricsTotal">0</span> / 30
+                    </div>
+                </div>
+
+                <div class="subcategory">
+                    <div class="subcategory-header">
+                        <h4>A. Expression of Theme</h4>
+                        <span class="max-points">Max: 5 points</span>
+                    </div>
+                    <div class="criteria-list">
+                        <div class="criteria-item">The calypso has a distinct, recognizable theme</div>
+                        <div class="criteria-item">The words develop and support the calypso's theme</div>
+                        <div class="criteria-item">The verses are linked to the theme and are not scattered</div>
+                        <div class="criteria-item">The verses flow logically into the chorus</div>
+                    </div>
+                    <div class="score-input">
+                        <label>Score:</label>
+                        <input type="number" class="score" data-max="5" data-category="lyrics" id="expressionTheme" min="0" max="5" step="0.5" value="0">
+                        <div class="validation-message" id="expressionTheme-error">Max 5 points</div>
+                    </div>
+                </div>
+
+                <div class="subcategory">
+                    <div class="subcategory-header">
+                        <h4>B. Word Craft</h4>
+                        <span class="max-points">Max: 10 points</span>
+                    </div>
+                    <div class="criteria-list">
+                        <div class="criteria-item">Appropriate choice of words that flow smoothly</div>
+                        <div class="criteria-item">Effective use of literary devices (satire, subtlety, double entendre, irony, wit, humor, puns)</div>
+                        <div class="criteria-item">Style and skill of the composition</div>
+                        <div class="criteria-item">Quality and style of the rhyme scheme</div>
+                    </div>
+                    <div class="score-input">
+                        <label>Score:</label>
+                        <input type="number" class="score" data-max="10" data-category="lyrics" id="wordCraft" min="0" max="10" step="0.5" value="0">
+                        <div class="validation-message" id="wordCraft-error">Max 10 points</div>
+                    </div>
+                </div>
+
+                <div class="subcategory">
+                    <div class="subcategory-header">
+                        <h4>C. Lyrical Fit</h4>
+                        <span class="max-points">Max: 10 points</span>
+                    </div>
+                    <div class="criteria-list">
+                        <div class="criteria-item">Marriage of lyrics and melody/arrangement</div>
+                        <div class="criteria-item">Words complement each other smoothly and comfortably</div>
+                        <div class="criteria-item">Not crowded with words - singer fits them comfortably</div>
+                        <div class="criteria-item">Lyrics flow smoothly with the arrangement</div>
+                    </div>
+                    <div class="score-input">
+                        <label>Score:</label>
+                        <input type="number" class="score" data-max="10" data-category="lyrics" id="lyricalFit" min="0" max="10" step="0.5" value="0">
+                        <div class="validation-message" id="lyricalFit-error">Max 10 points</div>
+                    </div>
+                </div>
+
+                <div class="subcategory">
+                    <div class="subcategory-header">
+                        <h4>D. Creativity</h4>
+                        <span class="max-points">Max: 5 points</span>
+                    </div>
+                    <div class="criteria-list">
+                        <div class="criteria-item">The topic is particularly fascinating</div>
+                        <div class="criteria-item">Effective incorporation of local color/experiences</div>
+                    </div>
+                    <div class="score-input">
+                        <label>Score:</label>
+                        <input type="number" class="score" data-max="5" data-category="lyrics" id="creativity" min="0" max="5" step="0.5" value="0">
+                        <div class="validation-message" id="creativity-error">Max 5 points</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MUSIC SECTION -->
+            <div class="category">
+                <div class="category-header">
+                    <h3>🎵 MUSIC</h3>
+                    <div class="category-total">
+                        <span id="musicTotal">0</span> / 30
+                    </div>
+                </div>
+
+                <div class="subcategory">
+                    <div class="subcategory-header">
+                        <h4>A. Melody</h4>
+                        <span class="max-points">Max: 15 points</span>
+                    </div>
+                    <div class="criteria-list">
+                        <div class="criteria-item">Catchiness and sweetness of melodic lines (verse, chorus, band chorus)</div>
+                        <div class="criteria-item">Melody's innovativeness effectively conveys the message</div>
+                        <div class="criteria-item">Melody captures the mood and theme</div>
+                    </div>
+                    <div class="score-input">
+                        <label>Score:</label>
+                        <input type="number" class="score" data-max="15" data-category="music" id="melody" min="0" max="15" step="0.5" value="0">
+                        <div class="validation-message" id="melody-error">Max 15 points</div>
+                    </div>
+                </div>
+
+                <div class="subcategory">
+                    <div class="subcategory-header">
+                        <h4>B. Arrangement</h4>
+                        <span class="max-points">Max: 15 points</span>
+                    </div>
+                    <div class="criteria-list">
+                        <div class="criteria-item">Arrangement improves rhythmic structure and enhances instruments</div>
+                        <div class="criteria-item">Arrangement suits the mood and tempo</div>
+                        <div class="criteria-item">Effectiveness of backup vocals</div>
+                        <div class="criteria-item">Key accurately carries the singer's voice and melody</div>
+                        <div class="criteria-item">Innovative use of instruments creates and conveys mood</div>
+                        <div class="criteria-item">Proper key to complement orchestration</div>
+                    </div>
+                    <div class="score-input">
+                        <label>Score:</label>
+                        <input type="number" class="score" data-max="15" data-category="music" id="arrangement" min="0" max="15" step="0.5" value="0">
+                        <div class="validation-message" id="arrangement-error">Max 15 points</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PERFORMANCE SECTION -->
+            <div class="category">
+                <div class="category-header">
+                    <h3>🎤 PERFORMANCE</h3>
+                    <div class="category-total">
+                        <span id="performanceTotal">0</span> / 30
+                    </div>
+                </div>
+
+                <div class="subcategory">
+                    <div class="subcategory-header">
+                        <h4>A. Rendition</h4>
+                        <span class="max-points">Max: 15 points</span>
+                    </div>
+                    <div class="criteria-list">
+                        <div class="criteria-item">Clear intonation, timing, pronunciation, and conviction</div>
+                        <div class="criteria-item">Effective use of voice (tone, volume, head and chest voice)</div>
+                        <div class="criteria-item">Correct pitch throughout the calypso</div>
+                        <div class="criteria-item">Manner of singing matches the mood</div>
+                        <div class="criteria-item">Song performed in calypso style</div>
+                    </div>
+                    <div class="score-input">
+                        <label>Score:</label>
+                        <input type="number" class="score" data-max="15" data-category="performance" id="rendition" min="0" max="15" step="0.5" value="0">
+                        <div class="validation-message" id="rendition-error">Max 15 points</div>
+                    </div>
+                </div>
+
+                <div class="subcategory">
+                    <div class="subcategory-header">
+                        <h4>B. Presentation</h4>
+                        <span class="max-points">Max: 10 points</span>
+                    </div>
+                    <div class="criteria-list">
+                        <div class="criteria-item">Body language expresses message and mood</div>
+                        <div class="criteria-item">Effective use of stage aligns with mood and message</div>
+                        <div class="criteria-item">Proper microphone use to project voice</div>
+                        <div class="criteria-item">Attire consistent with meaning and portrayal</div>
+                    </div>
+                    <div class="score-input">
+                        <label>Score:</label>
+                        <input type="number" class="score" data-max="10" data-category="performance" id="presentation" min="0" max="10" step="0.5" value="0">
+                        <div class="validation-message" id="presentation-error">Max 10 points</div>
+                    </div>
+                </div>
+
+                <div class="subcategory">
+                    <div class="subcategory-header">
+                        <h4>C. Demonstration</h4>
+                        <span class="max-points">Max: 5 points</span>
+                    </div>
+                    <div class="criteria-list">
+                        <div class="criteria-item">Impressive presentation through props, costumes, LED screens, stagehands, dancers</div>
+                        <div class="criteria-item">Attire consistency with meaning and portrayal</div>
+                    </div>
+                    <div class="score-input">
+                        <label>Score:</label>
+                        <input type="number" class="score" data-max="5" data-category="performance" id="demonstration" min="0" max="5" step="0.5" value="0">
+                        <div class="validation-message" id="demonstration-error">Max 5 points</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ORIGINALITY SECTION -->
+            <div class="category">
+                <div class="category-header">
+                    <h3>✨ ORIGINALITY</h3>
+                    <div class="category-total">
+                        <span id="originalityTotal">0</span> / 10
+                    </div>
+                </div>
+
+                <div class="subcategory">
+                    <div class="subcategory-header">
+                        <h4>A. Melody Originality</h4>
+                        <span class="max-points">Max: 5 points</span>
+                    </div>
+                    <div class="criteria-list">
+                        <div class="criteria-item">Arrangement and melody are uniquely fresh and original</div>
+                        <div class="criteria-item">Absence of other artists' music</div>
+                        <div class="criteria-item">Novel musical ideas in arrangement or melody</div>
+                    </div>
+                    <div class="score-input">
+                        <label>Score:</label>
+                        <input type="number" class="score" data-max="5" data-category="originality" id="melodyOriginality" min="0" max="5" step="0.5" value="0">
+                        <div class="validation-message" id="melodyOriginality-error">Max 5 points</div>
+                    </div>
+                </div>
+
+                <div class="subcategory">
+                    <div class="subcategory-header">
+                        <h4>B. Topic Originality</h4>
+                        <span class="max-points">Max: 5 points</span>
+                    </div>
+                    <div class="criteria-list">
+                        <div class="criteria-item">Topic is novel, original, and unexplored</div>
+                        <div class="criteria-item">Markedly different from previously performed calypsos</div>
+                        <div class="criteria-item">Fresh perspectives on a familiar subject</div>
+                    </div>
+                    <div class="score-input">
+                        <label>Score:</label>
+                        <input type="number" class="score" data-max="5" data-category="originality" id="topicOriginality" min="0" max="5" step="0.5" value="0">
+                        <div class="validation-message" id="topicOriginality-error">Max 5 points</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TOTAL SECTION -->
+            <div class="total-section">
+                <h3>GRAND TOTAL</h3>
+                <div class="total-score" id="grandTotal">0</div>
+                <div style="text-align: right;">
+                    <div style="font-size: 0.9em; opacity: 0.9;">out of</div>
+                    <div style="font-size: 1.5em; font-weight: bold;">100</div>
+                </div>
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div class="action-buttons">
+                <button class="btn btn-secondary" onclick="resetForm()">🔄 Start Over</button>
+                <button class="btn btn-primary" onclick="window.print()">🖨️ Print Score</button>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🎉 Good luck Adiaha! 🎉</p>
+            <p style="margin-top: 10px; font-size: 0.85em;">Sugar Mas Junior Calypso Monarch 2025</p>
+        </div>
+    </div>
+
+    <script>
+        // Calculate totals and update display
+        function calculateTotals() {
+            // Calculate Lyrics total
+            let lyricsTotal = 0;
+            document.querySelectorAll('.score[data-category="lyrics"]').forEach(input => {
+                lyricsTotal += parseFloat(input.value) || 0;
+            });
+            document.getElementById('lyricsTotal').textContent = lyricsTotal.toFixed(1);
+
+            // Calculate Music total
+            let musicTotal = 0;
+            document.querySelectorAll('.score[data-category="music"]').forEach(input => {
+                musicTotal += parseFloat(input.value) || 0;
+            });
+            document.getElementById('musicTotal').textContent = musicTotal.toFixed(1);
+
+            // Calculate Performance total
+            let performanceTotal = 0;
+            document.querySelectorAll('.score[data-category="performance"]').forEach(input => {
+                performanceTotal += parseFloat(input.value) || 0;
+            });
+            document.getElementById('performanceTotal').textContent = performanceTotal.toFixed(1);
+
+            // Calculate Originality total
+            let originalityTotal = 0;
+            document.querySelectorAll('.score[data-category="originality"]').forEach(input => {
+                originalityTotal += parseFloat(input.value) || 0;
+            });
+            document.getElementById('originalityTotal').textContent = originalityTotal.toFixed(1);
+
+            // Calculate Grand Total
+            const grandTotal = lyricsTotal + musicTotal + performanceTotal + originalityTotal;
+            document.getElementById('grandTotal').textContent = grandTotal.toFixed(1);
+        }
+
+        // Validate score input
+        function validateScore(input) {
+            const max = parseFloat(input.getAttribute('data-max'));
+            const value = parseFloat(input.value);
+            const errorElement = document.getElementById(input.id + '-error');
+
+            if (value > max) {
+                input.classList.add('error');
+                if (errorElement) {
+                    errorElement.classList.add('show');
+                }
+                input.value = max;
+            } else if (value < 0) {
+                input.value = 0;
+            } else {
+                input.classList.remove('error');
+                if (errorElement) {
+                    errorElement.classList.remove('show');
+                }
+            }
+
+            calculateTotals();
+        }
+
+        // Add event listeners to all score inputs
+        document.querySelectorAll('.score').forEach(input => {
+            input.addEventListener('input', function() {
+                validateScore(this);
+            });
+            
+            input.addEventListener('change', function() {
+                validateScore(this);
+            });
+        });
+
+        // Reset form
+        function resetForm() {
+            if (confirm('Start over with a fresh score? All current scores will be cleared.')) {
+                document.querySelectorAll('input').forEach(input => {
+                    if (input.type === 'number') {
+                        input.value = 0;
+                    } else {
+                        input.value = '';
+                    }
+                });
+                calculateTotals();
+            }
+        }
+
+        // Save to localStorage for recovery
+        function saveToLocalStorage() {
+            const formData = {
+                scores: {}
+            };
+
+            document.querySelectorAll('.score').forEach(input => {
+                formData.scores[input.id] = input.value;
+            });
+
+            localStorage.setItem('adiahaScoreTracker', JSON.stringify(formData));
+        }
+
+        // Load from localStorage
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('adiahaScoreTracker');
+            if (saved) {
+                const formData = JSON.parse(saved);
+                
+                if (confirm('Found saved practice scores. Want to continue from where you left off?')) {
+                    Object.keys(formData.scores).forEach(id => {
+                        const input = document.getElementById(id);
+                        if (input) {
+                            input.value = formData.scores[id];
+                        }
+                    });
+
+                    calculateTotals();
+                }
+            }
+        }
+
+        // Auto-save every 30 seconds
+        setInterval(saveToLocalStorage, 30000);
+
+        // Save before leaving page
+        window.addEventListener('beforeunload', function(e) {
+            saveToLocalStorage();
+        });
+
+        // Load saved data on page load
+        window.addEventListener('load', function() {
+            loadFromLocalStorage();
+            calculateTotals();
+        });
+
+        // Initialize totals on page load
+        calculateTotals();
+    </script>
+</body>
+</html>
